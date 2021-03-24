@@ -1,0 +1,255 @@
+A51 MACRO ASSEMBLER  TRAFFIC_LIGHT                                                        10/16/2020 03:56:30 PAGE     1
+
+
+MACRO ASSEMBLER A51 V7.07
+OBJECT MODULE PLACED IN traffic_light.OBJ
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE traffic_light.asm SET(SMALL) DEBUG EP
+
+LOC  OBJ            LINE     SOURCE
+
+0000                   1     ORG 00H
+                       2     
+  0010                 3     TOPLED EQU 10H  ;Internal memory of RAM 
+  0013                 4     RLED EQU 13H
+  0016                 5     BOTTOMLED EQU 16H
+  0019                 6     LLED EQU 19H
+                       7     
+  0011                 8     DISPLAY0 EQU 11H
+  0012                 9     DISPLAY1 EQU 12H
+                      10     
+0000 800A             11             JMP MAIN
+                      12         
+0002 C0F9A4B0         13     SSD:    DB 0C0H,0F9H,0A4H,0B0H,99H,92H,82H,0F8H,80H,90H    
+0006 999282F8                
+000A 8090                    
+                      14          
+                      15             
+000C 75A000           16     MAIN:   MOV P2,#00H
+000F 75B000           17             MOV P3,#00H
+0012 3101             18             CALL TOP_LIGHT
+0014 900002           19             MOV DPTR,#SSD
+0017 E4               20             CLR A
+                      21     
+0018 75100A           22             MOV TOPLED,#10
+001B 75130A           23             MOV RLED,#10
+001E 75160A           24             MOV BOTTOMLED,#10
+0021 751914           25             MOV LLED,#20
+                      26     
+0024 7814             27             MOV R0,#20 ;gives a delay between DISPLAYS 
+                      28             
+0026 7F28             29             MOV R7,#40
+                      30            
+0028 E510             31     TOP_A:  MOV A,TOPLED
+002A 311D             32             CALL DIGIT  
+                      33            
+002C D2B0             34     SET1:     SETB P3.0  ;TURN LED0 OF SSD TOP ON
+002E C2B1             35             CLR P3.1
+                      36     
+0030 E511             37             MOV A,DISPLAY0  ;DISPLAY FIRST LOCATION 0 
+0032 93               38             MOVC A,@A+DPTR
+0033 F5A0             39             MOV P2,A        ;MOVE TO PORT2 TO DISPLAY 0
+                      40     
+0035 11F8             41             CALL DELAY
+                      42     
+0037 75B000           43             MOV P3,#00H     ;CLEAR PORT3 
+                      44     
+003A D2B1             45             SETB P3.1       ;TURN LED1 OF SSD TOP 
+003C C2B0             46             CLR P3.0
+003E E512             47             MOV A,DISPLAY1  ;DISPLAY SECOND LOCATION 1
+0040 93               48             MOVC A,@A+DPTR  
+0041 F5A0             49             MOV P2,A        ;MOVE TO PORT2 FOR DISPLAY 1
+0043 11F8             50             CALL DELAY
+                      51     
+0045 75B000           52             MOV P3,#00H     ; CLEAR P3
+0048 8002             53             JMP SET3        ;SHORT JUMP
+                      54     
+004A 80DC             55     SET2:     JMP TOP_A  ;TARGET OUT OF RANGE
+                      56     
+A51 MACRO ASSEMBLER  TRAFFIC_LIGHT                                                        10/16/2020 03:56:30 PAGE     2
+
+004C E513             57     SET3:   MOV A,RLED      ;A=10
+004E 311D             58             CALL DIGIT
+                      59     
+0050 D2B2             60             SETB P3.2       ;LED 1 OF RIGHT SSD IS ON
+0052 C2B3             61             CLR P3.3
+0054 E511             62             MOV A,DISPLAY0  ;MOVE 1 TO A
+0056 93               63             MOVC A,@A+DPTR  ;MOVE LOCATION 1 VALUE TO A
+0057 F5A0             64             MOV P2,A        ;DISPLAY 1 
+0059 11F8             65             CALL DELAY      
+005B 75B000           66             MOV P3,#00H     ;CLEAR PORT3
+005E D2B3             67             SETB P3.3       ;TURN LED 0 OF RIGHT SSD
+0060 C2B2             68             CLR P3.2
+0062 E512             69             MOV A,DISPLAY1  ;MOVE 0 TO A
+0064 93               70             MOVC A,@A+DPTR  ;STORE LOCATION 0 AT A
+0065 F5A0             71             MOV P2,A        ;DISPLAY 0
+0067 11F8             72             CALL DELAY
+0069 75B000           73             MOV P3,#00H     ;CLEAR PORT3
+006C E516             74             MOV A,BOTTOMLED ;MOVE 10 TO A
+006E 311D             75             CALL DIGIT      
+0070 D2B4             76             SETB P3.4       ;LED1 OF BOTTOM SSD IS ON
+0072 C2B5             77             CLR P3.5        
+0074 E511             78             MOV A,DISPLAY0  ;A=1
+0076 93               79             MOVC A,@A+DPTR  ;STORE LOCATION 1 AT A
+0077 F5A0             80             MOV P2,A        ;DISPLAY 1
+0079 11F8             81             CALL DELAY      
+007B 75B000           82             MOV P3,#00H     ;CLEAR PORT3
+007E D2B5             83             SETB P3.5       ;LED0 OF BOTTOM SSD IF ON
+0080 C2B4             84             CLR P3.4        ;
+0082 E512             85             MOV A,DISPLAY1  ;A=0
+0084 93               86             MOVC A,@A+DPTR  ;STORE LOCATION 0 VALUE AT A
+0085 F5A0             87             MOV P2,A        ;DISPLAY 0      
+0087 11F8             88             CALL DELAY
+0089 75B000           89             MOV P3,#00H     ;CLEAR PORT3     
+008C E519             90             MOV A,LLED      ;A=20
+008E 311D             91             CALL DIGIT
+0090 D2B6             92             SETB P3.6       ;LED1 OF LEFT SSD IS ON
+0092 C2B7             93             CLR P3.7
+0094 E511             94             MOV A,DISPLAY0  ;A=2
+0096 93               95             MOVC A,@A+DPTR  ;MOVE AT LOCATION 2
+0097 F5A0             96             MOV P2,A        ;DISPLAY 2
+0099 11F8             97             CALL DELAY      
+009B 75B000           98             MOV P3,#00H     ;CLEAR PORT3
+009E D2B7             99             SETB P3.7       ;LED0 OF LEFT SSD IS ON
+00A0 C2B6            100             CLR P3.6
+00A2 E512            101             MOV A,DISPLAY1  ;A=0
+00A4 93              102             MOVC A,@A+DPTR  ;MOVE AT LOCATION 0
+00A5 F5A0            103             MOV P2,A        ;DISPLAY 0
+00A7 11F8            104             CALL DELAY
+00A9 75B000          105             MOV P3,#00H     ;CLEAR PORT3
+                     106     
+                     107     
+00AC D89C            108             DJNZ R0,SET2
+00AE 7814            109             MOV R0,#20
+                     110     
+                     111             
+00B0                 112     CHECK1: 
+00B0 BA0103          113             CJNE R2,#1, CHECK11
+00B3 75100A          114             MOV TOPLED, #10
+                     115     
+                     116     
+00B6                 117             CHECK11:
+00B6 D51010          118     DJNZ TOPLED,CHECK2 ;IF TOPLED=0, MOVE TO LEFTLED
+                     119             
+                     120     
+                     121             
+00B9 751014          122             MOV TOPLED,#20  ;MOVE 20 TO TOP SSD WHEN COUNT HAS FINISHED
+A51 MACRO ASSEMBLER  TRAFFIC_LIGHT                                                        10/16/2020 03:56:30 PAGE     3
+
+00BC 75130B          123             MOV RLED,#11
+00BF 75160B          124             MOV BOTTOMLED, #11
+00C2 75190B          125             MOV LLED, #11
+00C5 7A00            126             MOV R2,#0
+00C7 3108            127             CALL RIGHT_LIGHT
+                     128     
+                     129     
+00C9                 130     CHECK2:   
+00C9 D51310          131             DJNZ RLED,CHECK3;MOVE 20 TO RIGHT SSD WHEN COUNT HAS FINISHED
+00CC 75100A          132             MOV TOPLED,#10  ;MOVE 20 TO TOP SSD WHEN COUNT HAS FINISHED
+00CF 751314          133             MOV RLED,#20
+00D2 75160B          134             MOV BOTTOMLED,#11
+00D5 75190B          135             MOV LLED,#11
+00D8 7A01            136             MOV R2, #1
+00DA 310F            137             CALL BOTTOM_LIGHT
+                     138     
+                     139             
+                     140     
+                     141     
+00DC D51610          142     CHECK3: DJNZ BOTTOMLED,CHECK4   ;MOVE 10 TO BOTTOM SSD WHEN COUNT HAS FINISHED
+                     143     
+00DF 75100A          144             MOV TOPLED,#10  ;MOVE 20 TO TOP SSD WHEN COUNT HAS FINISHED
+00E2 75130A          145             MOV RLED,#10
+00E5 751614          146             MOV BOTTOMLED, #20
+00E8 75190B          147             MOV LLED, #11
+00EB 7A00            148             MOV R2, #0
+00ED 3116            149             CALL LEFT_LIGHT
+                     150     
+00EF D51900          151     CHECK4: DJNZ LLED,X4    ;MOVE 20 TO RIGHT SSD WHEN COUNT HAS FINISHED   
+                     152     
+00F2 DF02            153     X4:     DJNZ R7,L1
+00F4 010C            154             JMP MAIN
+                     155     
+00F6 0128            156     L1:     JMP TOP_A     
+                     157                                                                                     
+00F8 7C05            158                                                                                     DELAY:  MOV
+                              R4,#5
+00FA 7DFF            159                                                                                     H2:     MOV
+                              R5,#0FFH
+00FC DDFE            160                                                                                     H1:     DJN
+                             Z R5,H1
+00FE DCFA            161                                                                                             DJN
+                             Z R4,H2
+0100 22              162                                                                                             RET
+                     163     
+0101 759054          164     TOP_LIGHT:  MOV P1,#54H
+0104 758002          165             MOV P0,#02H
+0107 22              166             RET
+                     167     
+                     168     
+0108 7590A1          169     RIGHT_LIGHT:  MOV P1,#0A1H ;TURN GREEN LIGHT
+010B 758002          170             MOV P0,#02H
+010E 22              171             RET
+                     172     
+010F 759009          173     BOTTOM_LIGHT:  MOV P1,#09H
+0112 758005          174            MOV P0,#05H
+0115 22              175            RET
+                     176     
+0116 75904A          177     LEFT_LIGHT:  MOV P1,#4AH
+0119 758008          178            MOV P0,#08H
+011C 22              179            RET
+                     180     
+                     181     
+011D                 182     DIGIT:
+011D 75F00A          183             MOV B,#10
+0120 84              184             DIV AB
+A51 MACRO ASSEMBLER  TRAFFIC_LIGHT                                                        10/16/2020 03:56:30 PAGE     4
+
+0121 F511            185             MOV DISPLAY0,A
+0123 85F012          186             MOV DISPLAY1,B
+0126 22              187             RET
+                     188     END
+A51 MACRO ASSEMBLER  TRAFFIC_LIGHT                                                        10/16/2020 03:56:30 PAGE     5
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+B. . . . . . . . .  D ADDR   00F0H   A   
+BOTTOMLED. . . . .  N NUMB   0016H   A   
+BOTTOM_LIGHT . . .  C ADDR   010FH   A   
+CHECK1 . . . . . .  C ADDR   00B0H   A   
+CHECK11. . . . . .  C ADDR   00B6H   A   
+CHECK2 . . . . . .  C ADDR   00C9H   A   
+CHECK3 . . . . . .  C ADDR   00DCH   A   
+CHECK4 . . . . . .  C ADDR   00EFH   A   
+DELAY. . . . . . .  C ADDR   00F8H   A   
+DIGIT. . . . . . .  C ADDR   011DH   A   
+DISPLAY0 . . . . .  N NUMB   0011H   A   
+DISPLAY1 . . . . .  N NUMB   0012H   A   
+H1 . . . . . . . .  C ADDR   00FCH   A   
+H2 . . . . . . . .  C ADDR   00FAH   A   
+L1 . . . . . . . .  C ADDR   00F6H   A   
+LEFT_LIGHT . . . .  C ADDR   0116H   A   
+LLED . . . . . . .  N NUMB   0019H   A   
+MAIN . . . . . . .  C ADDR   000CH   A   
+P0 . . . . . . . .  D ADDR   0080H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+P3 . . . . . . . .  D ADDR   00B0H   A   
+RIGHT_LIGHT. . . .  C ADDR   0108H   A   
+RLED . . . . . . .  N NUMB   0013H   A   
+SET1 . . . . . . .  C ADDR   002CH   A   
+SET2 . . . . . . .  C ADDR   004AH   A   
+SET3 . . . . . . .  C ADDR   004CH   A   
+SSD. . . . . . . .  C ADDR   0002H   A   
+TOPLED . . . . . .  N NUMB   0010H   A   
+TOP_A. . . . . . .  C ADDR   0028H   A   
+TOP_LIGHT. . . . .  C ADDR   0101H   A   
+X4 . . . . . . . .  C ADDR   00F2H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)
